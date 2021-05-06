@@ -55,7 +55,11 @@ CreateNewBlogPost : ParsableCommand
 			
 			let fileName = "\(fileDateFormatter.string(from: date))-\(urlTitle).md"
 			self.location = self.location/fileName
-			print("\(self.location)")
+			
+			if self.location.exists
+			{
+				throw ValidationError("File exists: \(self.location)")
+			}
 		}
 		
 		//	Substitute values in the template…
@@ -108,7 +112,7 @@ CreateNewBlogPost : ParsableCommand
 	{
 		var cleanTitle = inTitle.replacingOccurrences(of: " ", with: "-")
 		cleanTitle = cleanTitle.filter { !$0.unicodeScalars.contains(where: { !CharacterSet.urlUserAllowed.contains($0) }) }
-		cleanTitle.removeAll(where: { "'".contains($0) })
+		cleanTitle.removeAll(where: { "':".contains($0) })
 		
 		cleanTitle = cleanTitle.lowercased()
 		return cleanTitle
@@ -121,18 +125,18 @@ sTemplate = """
 	---
 	layout: post
 	title: "{ title }"
-	date: {date}
+	date: { date }
 	excerpt: ""
 	categories:
 	  -
 	tags: [frontpage]
 	image:
-	  path:
+	  path: { imageURL }
 	  width:
 	  height:
 	---
 
-	<div style="text-align: left; margin-bottom: 2em;"><img src="{ imageURL}"></div>
+	<div style="text-align: left; margin-bottom: 2em;"><img src="{ imageURL }"></div>
 	"""
 
 CreateNewBlogPost.main()
