@@ -30,7 +30,7 @@ CreateNewBlogPost : ParsableCommand
 	{
 		guard
 			self.location.isDirectory
-				||	!self.location.exists
+				||	!self.location.exists	//	TODO: redundant, as we check again later.
 		else
 		{
 			throw ValidationError("File exists")
@@ -42,7 +42,7 @@ CreateNewBlogPost : ParsableCommand
 	run()
 		throws
 	{
-		let date = Date()		//	TODO: let user specify
+		let date = Date()					//	TODO: let user specify.
 		
 		if self.location.isDirectory
 		{
@@ -63,6 +63,9 @@ CreateNewBlogPost : ParsableCommand
 		}
 		
 		//	Substitute values in the template…
+		//
+		//	TODO: Let the user specify a template. Should probably
+		//			 live in a .rc directory in the user’s home dir.
 		
 		let postDateFormatter = DateFormatter()
 		postDateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
@@ -106,6 +109,11 @@ CreateNewBlogPost : ParsableCommand
 //		print(contents)
 	}
 	
+	/**
+		Converts a string like "How To: Command Line Tools in Swift" into
+		"how-to-command-line-tools-in-swift".
+	*/
+	
 	func
 	sanitize(title inTitle: String)
 		-> String
@@ -141,6 +149,10 @@ sTemplate = """
 
 CreateNewBlogPost.main()
 
+/**
+	Allows Path to be directly instantiated by ArgumentParser.
+*/
+
 extension
 Path : ExpressibleByArgument
 {
@@ -150,6 +162,22 @@ Path : ExpressibleByArgument
 		self.init(inArg)
 	}
 }
+
+/**
+	This extension allows us to write
+	
+	```swift
+	var fd = FileDescriptor.standardError
+	print("Unmatched keys in template: \(mks)", to: &fd)
+	```
+	
+	Maybe someday the Swift team will enhance `print()` and `FileDecriptor`
+	to allow
+	
+	```swift
+	pring("Some error", to: .standardError)
+	```
+*/
 
 extension
 FileDescriptor : TextOutputStream
