@@ -89,7 +89,7 @@ CreateNewBlogPost : ParsableCommand
 		let matches = re.matches(in: contents, options: [], range: NSMakeRange(0, contents.count))
 		if matches.count > 0
 		{
-			let matchedKeys = matches.map { (contents as NSString).substring(with: $0.range) }
+			let matchedKeys = matches.map { (contents as NSString).substring(with: $0.range(at: 1)) }
 			let mks = matchedKeys.joined(separator: ", ")
 			
 			var fd = FileDescriptor.standardError
